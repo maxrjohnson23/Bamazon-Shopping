@@ -1,0 +1,11 @@
+{
+  "name": "Bamazon-Shopping",
+  "version": "0.0.1",
+  "dependencies": {
+    "chalk": "latest",
+    "clear": "latest",
+    "inquirer": "latest",
+    "mysql": "latest",
+    "promise-mysql": "^3.2.0"
+  }
+}
