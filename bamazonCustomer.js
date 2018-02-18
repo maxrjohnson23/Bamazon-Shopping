@@ -7,7 +7,7 @@ const Table = require("cli-table2");
 // Store product ids for user input validation
 let productIds = [];
 
-// Prompt template for
+// Prompt template for user actions
 const userActions = [
     {
         name: "userAction",
@@ -28,6 +28,7 @@ const purchaseActions = [
         type: "input",
         message: "Please enter the item id:",
         validate: (value) => {
+            // Check if valid product id
             return productIds.includes(parseInt(value)) || "Please enter a valid item id";
         }
     },
@@ -37,7 +38,7 @@ const purchaseActions = [
         message: "Please enter the quantity:",
         validate: (value) => {
             // Check if entry is a number
-            return /^\d$/.test(value) || "Please enter a valid item id";
+            return /^\d+$/.test(value) || "Please enter a number";
         }
     },
 ];
@@ -53,10 +54,8 @@ function displayProducts() {
             // Display the table
             console.log(productTable.toString());
             resolve();
-
         }).catch((err) => {
-            console.log(chalk.red('An error occurred: Could not retrieve products' + err));
-            reject(err);
+            reject(`An error occurred: Could not retrieve products. \nError Details: ${err}`);
         });
     });
 }
@@ -80,38 +79,34 @@ function formatProductTable(products) {
 }
 
 function promptUserActions() {
-    inquirer.prompt(userActions).then(answer => {
+    return inquirer.prompt(userActions).then(answer => {
             switch (answer.userAction) {
                 case "Place an Order":
-                    promptPurchaseActions().then(promptUserActions);
-                    break;
+                    return inquirer.prompt(purchaseActions)
+                        .then(order => placeOrder(order));
                 case "Exit":
-                    console.log("Goodbye");
-                    // close DB connection
-                    bamazonData.end();
-                    break;
+                    return Promise.resolve("Goodbye!");
             }
         }
     );
 }
 
-function promptPurchaseActions() {
-    return inquirer.prompt(purchaseActions).then(order => placeOrder(order));
-}
-
 function placeOrder(order) {
-    bamazonData.getProductStock(order.itemId).then(result => {
-        let availableStock = result[0].quantity;
-        // Check if there is enough stock
-        if (availableStock < order.itemQuantity) {
-            return Promise.reject(Error("Stock unavailable"));
-        }
-        return availableStock;
-    }).then(availableStock => {
-        let newStock = availableStock - order.itemQuantity;
-        // Update stock to reflect the order
-        bamazonData.updateProductStock(order.itemId, newStock);
-    }).catch((err) => console.log(chalk.red(`Could not place the order ${err}`)));
+    return new Promise((resolve, reject) => {
+        bamazonData.getProductStock(order.itemId).then(result => {
+            let availableStock = result[0].quantity;
+
+            // Reject if there is not enough stock
+            if (availableStock < order.itemQuantity) {
+                return reject("Could not place order - Stock unavailable");
+            }
+
+            let newStock = availableStock - order.itemQuantity;
+            // Update stock to reflect the order
+            bamazonData.updateProductStock(order.itemId, newStock);
+            resolve("Order placed successfully! Come back soon.");
+        });
+    });
 }
 
 
@@ -125,7 +120,19 @@ function displayBanner() {
 
 function start() {
     displayBanner();
-    displayProducts().then(promptUserActions);
+
+    // Display products and begin order process
+    displayProducts()
+        .then(promptUserActions)
+        .then((message) => {
+            console.log(chalk.green(message));
+            console.log(chalk.yellow("Exiting..."));
+            bamazonData.end();
+        }).catch((err) => {
+        console.log(chalk.red(err));
+        console.log(chalk.yellow("Exiting..."));
+        bamazonData.end();
+    });
 }
 
 start();
