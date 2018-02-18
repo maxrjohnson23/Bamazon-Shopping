@@ -105,9 +105,7 @@ function displayBanner() {
 
 function start() {
     displayBanner();
-    displayProducts().then(() => {
-        promptUserActions();
-    })
+    displayProducts().then(promptUserActions)
 }
 
 start();
