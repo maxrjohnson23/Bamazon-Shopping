@@ -9,8 +9,9 @@ const connection = mysql.createConnection({
 });
 
 function getProducts() {
-    return new Promise(function(resolve, reject) {
-        connection.query("SELECT item_id as id, product_name as name, department_name as department, price, stock_quantity as stock FROM PRODUCTS", function(err, results) {
+    return new Promise((resolve, reject) => {
+        let sql = "SELECT item_id as id, product_name as name, department_name as department, price, stock_quantity as stock FROM PRODUCTS";
+        connection.query(sql, function(err, results) {
             if(err) {
                 reject(err);
             }
@@ -20,8 +21,9 @@ function getProducts() {
 }
 
 function updateProductStock(itemId, newStock) {
-    return new Promise(function(resolve, reject) {
-        connection.query("UPDATE PRODUCTS set stock_quantity = ? where item_id = ?", [newStock, itemId], (err, results) => {
+    return new Promise((resolve, reject) => {
+        let sql = "UPDATE PRODUCTS set stock_quantity = ? where item_id = ?";
+        connection.query(sql, [newStock, itemId], (err, results) => {
             if(err) {
                 reject(err);
             }
@@ -31,8 +33,21 @@ function updateProductStock(itemId, newStock) {
 }
 
 function getProductStock(itemId) {
-    return new Promise(function(resolve, reject) {
-        connection.query("SELECT stock_quantity as quantity FROM PRODUCTS where item_id = ?", [itemId], (err, results) => {
+    return new Promise((resolve, reject) => {
+        let sql = "SELECT stock_quantity as quantity FROM PRODUCTS where item_id = ?";
+        connection.query(sql, [itemId], (err, results) => {
+            if(err) {
+                reject(err);
+            }
+            resolve(results);
+        })
+    })
+}
+
+function getLowInventoryProducts(threshold) {
+    return new Promise((resolve, reject) => {
+        let sql = 'SELECT item_id as id, product_name as name, department_name as department, price, stock_quantity as stock FROM PRODUCTS where stock_quantity < ?';
+        connection.query(sql, [threshold], (err, results) => {
             if(err) {
                 reject(err);
             }
@@ -50,5 +65,6 @@ module.exports = {
     getProducts: getProducts,
     getProductStock: getProductStock,
     updateProductStock: updateProductStock,
+    getLowInventoryProducts, getLowInventoryProducts,
     end: end
 };
