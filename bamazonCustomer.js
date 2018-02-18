@@ -4,6 +4,10 @@ const chalk = require("chalk");
 const clear = require("clear");
 const Table = require("cli-table2");
 
+// Store product ids for user input validation
+let productIds = [];
+
+// Prompt template for
 const userActions = [
     {
         name: "userAction",
@@ -19,15 +23,41 @@ const userActions = [
     }
 ];
 
-function getProducts() {
-    return new Promise((resolve, reject) => {
-        bamazonData.getProducts().then(products => {
-            resolve(products);
+// Prompt template for purchasing an item
+const purchaseActions = [
+    {
+        name: "itemId",
+        type: "input",
+        message: "Please enter the item id:",
+        validate: function(value) {
+            return productIds.includes(parseInt(value)) ||  "Please enter a valid item id";
+        }
+    },
+    {
+        name: "itemQuantity",
+        type: "input",
+        message: "Please enter the quantity:",
+        validate: function(value) {
+            // Check if entry is a number
+            return /^\d$/.test(value) || "Please enter a valid item id";
+        }
+    },
+];
+
+function displayProducts() {
+    return bamazonData.getProducts().then(products => {
+            // Populate product id list for user input validation
+            products.forEach((prod) => {
+               productIds.push(prod.id);
+            });
+            let productTable = formatProductTable(products);
+            // Display the table
+            console.log(productTable.toString());
         }).catch((err) => console.log(chalk.red('An error occurred: Could not retrieve products' + err)));
-    });
+
 }
 
-function displayProducts(products) {
+function formatProductTable(products) {
     // Format product output in a table using cli-table2
     let table = new Table({
         head: ["Item ID", "Description", "Price"],
@@ -41,14 +71,15 @@ function displayProducts(products) {
     products.forEach(prod => {
         table.push([prod.id, prod.name, `$${prod.price.toFixed(2)}`])
     });
-    console.log(table.toString());
+
+    return table;
 }
 
 function promptUserActions() {
     inquirer.prompt(userActions).then(function (answer) {
         switch (answer.userAction) {
-            case "View Products":
-                displayProducts();
+            case "Add Item to Cart":
+                promptPurchaseActions();
                 break;
             case "Exit":
                 console.log("Goodbye");
@@ -56,6 +87,13 @@ function promptUserActions() {
         }
     });
 }
+
+function promptPurchaseActions() {
+    inquirer.prompt(purchaseActions).then(function (answer) {
+        console.log('Thanks for the purchase');
+    })
+}
+
 
 function displayBanner() {
     clear();
@@ -67,7 +105,7 @@ function displayBanner() {
 
 function start() {
     displayBanner();
-    getProducts().then(products => displayProducts(products)).then(() => {
+    displayProducts().then(() => {
         promptUserActions();
     })
 }

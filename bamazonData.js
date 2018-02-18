@@ -15,6 +15,7 @@ function getProducts() {
                 reject(err);
             }
             resolve(results);
+            connection.end();
         });
     });
 }
