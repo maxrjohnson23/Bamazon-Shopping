@@ -14,9 +14,7 @@ const userActions = [
         type: "list",
         message: "What would you like to do?",
         choices: [
-            "View Products",
-            "Add Item to Cart",
-            "Checkout",
+            "Place an Order",
             new inquirer.Separator(),
             "Exit"
         ]
@@ -29,15 +27,15 @@ const purchaseActions = [
         name: "itemId",
         type: "input",
         message: "Please enter the item id:",
-        validate: function(value) {
-            return productIds.includes(parseInt(value)) ||  "Please enter a valid item id";
+        validate: (value) => {
+            return productIds.includes(parseInt(value)) || "Please enter a valid item id";
         }
     },
     {
         name: "itemQuantity",
         type: "input",
         message: "Please enter the quantity:",
-        validate: function(value) {
+        validate: (value) => {
             // Check if entry is a number
             return /^\d$/.test(value) || "Please enter a valid item id";
         }
@@ -46,14 +44,14 @@ const purchaseActions = [
 
 function displayProducts() {
     return bamazonData.getProducts().then(products => {
-            // Populate product id list for user input validation
-            products.forEach((prod) => {
-               productIds.push(prod.id);
-            });
-            let productTable = formatProductTable(products);
-            // Display the table
-            console.log(productTable.toString());
-        }).catch((err) => console.log(chalk.red('An error occurred: Could not retrieve products' + err)));
+        // Populate product id list for user input validation
+        products.forEach((prod) => {
+            productIds.push(prod.id);
+        });
+        let productTable = formatProductTable(products);
+        // Display the table
+        console.log(productTable.toString());
+    }).catch((err) => console.log(chalk.red('An error occurred: Could not retrieve products' + err)));
 
 }
 
@@ -76,10 +74,11 @@ function formatProductTable(products) {
 }
 
 function promptUserActions() {
-    inquirer.prompt(userActions).then(function (answer) {
+    inquirer.prompt(userActions).then((answer) => {
         switch (answer.userAction) {
-            case "Add Item to Cart":
-                promptPurchaseActions();
+            case "Place an Order":
+                promptPurchaseActions()
+                    .then(order => placeOrder(order));
                 break;
             case "Exit":
                 console.log("Goodbye");
@@ -89,23 +88,36 @@ function promptUserActions() {
 }
 
 function promptPurchaseActions() {
-    inquirer.prompt(purchaseActions).then(function (answer) {
-        console.log('Thanks for the purchase');
-    })
+    return inquirer.prompt(purchaseActions);
+}
+
+function placeOrder(order) {
+        bamazonData.getProductStock(order.itemId).then(result => {
+            let availableStock = result[0].quantity;
+            // Check if there is enough stock
+            if (availableStock < order.itemQuantity) {
+                return Promise.reject(Error("Stock unavailable"));
+            }
+            return availableStock;
+        }).then(availableStock => {
+            let availableStock = availableStock - order.itemQuantity;
+            // Update stock to reflect the order
+            bamazonData.updateProductStock(order.itemId, availableStock);
+        }).catch((err) => console.log(chalk.red(`Could not place the order ${err}`)));
 }
 
 
 function displayBanner() {
     clear();
-    console.log(chalk.bold.blue('--------------------------------------------------------'));
-    console.log(chalk.bold.green('    Welcome to Bamazon - The Command Line Catalog'));
-    console.log(chalk.bold.blue('-------------------------------------------------------- \n'));
+    console.log(chalk.bold.blue('-------------------------------------------------------------'));
+    console.log(chalk.bold.green('       Welcome to Bamazon - The Command Line Catalog'));
+    console.log(chalk.bold.blue('------------------------------------------------------------- \n'));
 }
 
 
 function start() {
     displayBanner();
-    displayProducts().then(promptUserActions)
+    displayProducts().then(promptUserActions);
 }
 
 start();
