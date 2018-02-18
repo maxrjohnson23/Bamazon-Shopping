@@ -66,8 +66,7 @@ function formatProductTable(products) {
         head: ["Item ID", "Description", "Price"],
         style: {
             head: ["blue"]
-        },
-        colWidths: [10, 50, 10]
+        }
     });
 
     // Add product results to the table with price formatting
