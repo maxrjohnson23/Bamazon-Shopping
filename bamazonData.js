@@ -41,8 +41,14 @@ function getProductStock(itemId) {
     })
 }
 
+function end() {
+    // end DB connection on application exit
+    connection.end();
+}
+
 module.exports = {
     getProducts: getProducts,
     getProductStock: getProductStock,
-    updateProductStock: updateProductStock
+    updateProductStock: updateProductStock,
+    end: end
 };

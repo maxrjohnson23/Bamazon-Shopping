@@ -43,16 +43,22 @@ const purchaseActions = [
 ];
 
 function displayProducts() {
-    return bamazonData.getProducts().then(products => {
-        // Populate product id list for user input validation
-        products.forEach((prod) => {
-            productIds.push(prod.id);
-        });
-        let productTable = formatProductTable(products);
-        // Display the table
-        console.log(productTable.toString());
-    }).catch((err) => console.log(chalk.red('An error occurred: Could not retrieve products' + err)));
+    return new Promise((resolve, reject) => {
+        bamazonData.getProducts().then(products => {
+            // Populate product id list for user input validation
+            products.forEach((prod) => {
+                productIds.push(prod.id);
+            });
+            let productTable = formatProductTable(products);
+            // Display the table
+            console.log(productTable.toString());
+            resolve();
 
+        }).catch((err) => {
+            console.log(chalk.red('An error occurred: Could not retrieve products' + err));
+            reject(err);
+        });
+    });
 }
 
 function formatProductTable(products) {
@@ -74,36 +80,38 @@ function formatProductTable(products) {
 }
 
 function promptUserActions() {
-    inquirer.prompt(userActions).then((answer) => {
-        switch (answer.userAction) {
-            case "Place an Order":
-                promptPurchaseActions()
-                    .then(order => placeOrder(order));
-                break;
-            case "Exit":
-                console.log("Goodbye");
-                break;
+    inquirer.prompt(userActions).then(answer => {
+            switch (answer.userAction) {
+                case "Place an Order":
+                    promptPurchaseActions().then(promptUserActions);
+                    break;
+                case "Exit":
+                    console.log("Goodbye");
+                    // close DB connection
+                    bamazonData.end();
+                    break;
+            }
         }
-    });
+    );
 }
 
 function promptPurchaseActions() {
-    return inquirer.prompt(purchaseActions);
+    return inquirer.prompt(purchaseActions).then(order => placeOrder(order));
 }
 
 function placeOrder(order) {
-        bamazonData.getProductStock(order.itemId).then(result => {
-            let availableStock = result[0].quantity;
-            // Check if there is enough stock
-            if (availableStock < order.itemQuantity) {
-                return Promise.reject(Error("Stock unavailable"));
-            }
-            return availableStock;
-        }).then(availableStock => {
-            let availableStock = availableStock - order.itemQuantity;
-            // Update stock to reflect the order
-            bamazonData.updateProductStock(order.itemId, availableStock);
-        }).catch((err) => console.log(chalk.red(`Could not place the order ${err}`)));
+    bamazonData.getProductStock(order.itemId).then(result => {
+        let availableStock = result[0].quantity;
+        // Check if there is enough stock
+        if (availableStock < order.itemQuantity) {
+            return Promise.reject(Error("Stock unavailable"));
+        }
+        return availableStock;
+    }).then(availableStock => {
+        let newStock = availableStock - order.itemQuantity;
+        // Update stock to reflect the order
+        bamazonData.updateProductStock(order.itemId, newStock);
+    }).catch((err) => console.log(chalk.red(`Could not place the order ${err}`)));
 }
 
 
