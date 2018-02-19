@@ -17,6 +17,10 @@
    ```
    $ npm install
    ```
+   
+### Application Design
+   ![Application Design](samples/app_arch.jpg?raw=true)
+
 ### Database Setup
 1. Install [MySQL](https://dev.mysql.com/downloads/installer/ "MySQL")for your operating system.
 2. Run the [bamazon_DDL.sql](sql/bamazon_DDL.sql) script from MySQL Workbench (or similar tool) to create the database schema
