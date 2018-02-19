@@ -47,7 +47,9 @@
 2. Follow the on-screen prompts to view/update inventory and add new products
 
    **Update Inventory**
+   
    ![Manager Inventory](samples/manager_inventory.gif?raw=true)
    
    **Add Product**
+   
    ![Manager Product](samples/manager_addproduct.gif?raw=true)
