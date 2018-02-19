@@ -46,6 +46,45 @@ const inventoryActions = [
     },
 ];
 
+// Prompt template for purchasing an item
+const addProductActions = [
+    {
+        name: "itemName",
+        type: "input",
+        message: "Please enter the item name:",
+        validate: (value) => {
+            return value.length > 0 || "Product name cannot be empty"
+        }
+    },
+    {
+        name: "deptName",
+        type: "input",
+        message: "Please enter the department name:",
+        validate: (value) => {
+            return value.length > 0 || "Department name cannot be empty"
+        }
+    },
+    {
+        name: "itemPrice",
+        type: "input",
+        message: "Please enter the item price: $",
+        validate: (value) => {
+            // Check if entry is a number
+
+            return !isNaN(value) || "Please enter a valid number";
+        }
+    },
+    {
+        name: "itemQuantity",
+        type: "input",
+        message: "Please enter the quantity to be added:",
+        validate: (value) => {
+            // Check if entry is a number
+            return /^\d+$/.test(value) || "Please enter a number";
+        }
+    }
+];
+
 function displayProducts() {
     return new Promise((resolve, reject) => {
         bamazonData.getProducts().then(products => {
@@ -94,18 +133,16 @@ function promptManagerActions() {
     return inquirer.prompt(managerActions).then(answer => {
             switch (answer.action) {
                 case "View Products":
-                    // return inquirer.prompt(purchaseActions)
-                    //     .then(order => placeOrder(order));
                     return displayProducts().then(promptManagerActions);
-                // "View Products",
-                //     "View Low Inventory",
-                //     "Add Inventory",
-                //     "Add Product"
                 case "View Low Inventory" :
                     return displayLowInventory().then(promptManagerActions);
                 case "Add Inventory" :
                     return inquirer.prompt(inventoryActions)
                         .then(updates => updateInventory(updates))
+                        .then(promptManagerActions);
+                case "Add Product":
+                    return inquirer.prompt(addProductActions)
+                        .then(product => addProduct(product))
                         .then(promptManagerActions);
                 case "Exit":
                     return Promise.resolve("Goodbye!");
@@ -126,6 +163,16 @@ function updateInventory(updates) {
             console.log(chalk.green("Inventory updated"));
             resolve();
         }).catch(err => reject(err));
+    });
+}
+
+function addProduct(product) {
+
+    return new Promise((resolve, reject) => {
+        bamazonData.addProduct(product).then(() => {
+            console.log(chalk.green("Product added"));
+            resolve();
+        }).catch(err => reject('ERRR' +err));
     });
 }
 

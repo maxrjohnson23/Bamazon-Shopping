@@ -11,8 +11,26 @@ const connection = mysql.createConnection({
 function getProducts() {
     return new Promise((resolve, reject) => {
         let sql = "SELECT item_id as id, product_name as name, department_name as department, price, stock_quantity as stock FROM PRODUCTS";
-        connection.query(sql, function(err, results) {
-            if(err) {
+        connection.query(sql, (err, results) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(results);
+        });
+    });
+}
+
+function addProduct(product) {
+    return new Promise((resolve, reject) => {
+        let sql = "INSERT into PRODUCTS SET  ?";
+        let productDetails = {
+            product_name: product.itemName,
+            department_name: product.deptName,
+            price: product.itemPrice,
+            stock_quantity: product.itemQuantity
+        };
+        connection.query(sql, productDetails, (err, results) => {
+            if (err) {
                 reject(err);
             }
             resolve(results);
@@ -24,7 +42,7 @@ function updateProductStock(itemId, newStock) {
     return new Promise((resolve, reject) => {
         let sql = "UPDATE PRODUCTS set stock_quantity = ? where item_id = ?";
         connection.query(sql, [newStock, itemId], (err, results) => {
-            if(err) {
+            if (err) {
                 reject(err);
             }
             resolve(results);
@@ -36,7 +54,7 @@ function getProductStock(itemId) {
     return new Promise((resolve, reject) => {
         let sql = "SELECT stock_quantity as quantity FROM PRODUCTS where item_id = ?";
         connection.query(sql, [itemId], (err, results) => {
-            if(err) {
+            if (err) {
                 reject(err);
             }
             resolve(results);
@@ -48,7 +66,7 @@ function getLowInventoryProducts(threshold) {
     return new Promise((resolve, reject) => {
         let sql = 'SELECT item_id as id, product_name as name, department_name as department, price, stock_quantity as stock FROM PRODUCTS where stock_quantity < ?';
         connection.query(sql, [threshold], (err, results) => {
-            if(err) {
+            if (err) {
                 reject(err);
             }
             resolve(results);
@@ -63,6 +81,7 @@ function end() {
 
 module.exports = {
     getProducts: getProducts,
+    addProduct: addProduct,
     getProductStock: getProductStock,
     updateProductStock: updateProductStock,
     getLowInventoryProducts, getLowInventoryProducts,
