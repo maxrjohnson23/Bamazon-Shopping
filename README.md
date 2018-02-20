@@ -19,7 +19,7 @@
    ```
    
 ### Application Design
-    <img src="samples/app_arch.jpb?raw=true" alt="Application Design" width="400px" align="center" />
+   <img src="samples/app_arch.jpb?raw=true" alt="Application Design" width="400px" align="center" />
 
 
 ### Database Setup
@@ -49,7 +49,7 @@
 
    **Update Inventory**
    
-   <img src="samples/manager_inventory?raw=true" alt="Manager Inventory" width="400px" />
+   <img src="samples/manager_inventory.gif?raw=true" alt="Manager Inventory" width="400px" />
 
    
    **Add Product**
