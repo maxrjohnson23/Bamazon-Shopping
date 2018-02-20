@@ -35,7 +35,7 @@
 
 2. Follow the on-screen prompts to place an order
 
-   ![Customer Order](samples/customer_order.gif?raw=true)
+   ![Customer Order](samples/customer_order.gif?raw=true){:width="400px"}
    
 ### Manager Actions
 1. Run bamazonManager.js to start the admin application
@@ -48,8 +48,8 @@
 
    **Update Inventory**
    
-   ![Manager Inventory](samples/manager_inventory.gif?raw=true)
+   ![Manager Inventory](samples/manager_inventory.gif?raw=true){:width="400px"}
    
    **Add Product**
    
-   ![Manager Product](samples/manager_addproduct.gif?raw=true)
+   ![Manager Product](samples/manager_addproduct.gif?raw=true){:width="400px"}
