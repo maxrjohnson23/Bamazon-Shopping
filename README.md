@@ -35,8 +35,9 @@
 
 2. Follow the on-screen prompts to place an order
 
-   ![Customer Order](samples/customer_order.gif?raw=true){:width="400px"}
-   
+  <!--![Customer Order](samples/customer_order.gif?raw=true){:width="400px"}-->
+   <!--![Customer Order](samples/customer_order.gif?raw=true){:width="400px"}-->
+   <img src="samples/customer_order.gif?raw=true" width="400px" />
 ### Manager Actions
 1. Run bamazonManager.js to start the admin application
 
