@@ -19,7 +19,8 @@
    ```
    
 ### Application Design
-   ![Application Design](samples/app_arch.jpg?raw=true)
+    <img src="samples/app_arch.jpb?raw=true" alt="Application Design" width="400px" align="center" />
+
 
 ### Database Setup
 1. Install [MySQL](https://dev.mysql.com/downloads/installer/ "MySQL")for your operating system.
@@ -35,9 +36,8 @@
 
 2. Follow the on-screen prompts to place an order
 
-  <!--![Customer Order](samples/customer_order.gif?raw=true){:width="400px"}-->
-   <!--![Customer Order](samples/customer_order.gif?raw=true){:width="400px"}-->
-   <img src="samples/customer_order.gif?raw=true" width="400px" />
+   <img src="samples/customer_order.gif?raw=true" alt="Customer Order" width="400px" />
+   
 ### Manager Actions
 1. Run bamazonManager.js to start the admin application
 
@@ -49,8 +49,9 @@
 
    **Update Inventory**
    
-   ![Manager Inventory](samples/manager_inventory.gif?raw=true){:width="400px"}
+   <img src="samples/manager_inventory?raw=true" alt="Manager Inventory" width="400px" />
+
    
    **Add Product**
    
-   ![Manager Product](samples/manager_addproduct.gif?raw=true){:width="400px"}
+   <img src="samples/manager_addproduct.gif?raw=true" alt="Manager Add Product" width="400px" />
