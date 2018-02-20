@@ -19,7 +19,9 @@
    ```
    
 ### Application Design
+<p align="center">
    <img src="samples/app_arch.jpg?raw=true" alt="Application Design" width="400px" align="center" />
+</p>
 
 
 ### Database Setup
