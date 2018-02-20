@@ -19,7 +19,7 @@
    ```
    
 ### Application Design
-   <img src="samples/app_arch.jpb?raw=true" alt="Application Design" width="400px" align="center" />
+   <img src="samples/app_arch.jpg?raw=true" alt="Application Design" width="400px" align="center" />
 
 
 ### Database Setup
